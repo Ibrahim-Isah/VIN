@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +21,14 @@ const schema = z.object({
 });
 
 const NewVehicle = () => {
-	const { userId, isSignedIn, isLoaded, signOut } = useAuth();
+	const { userId, isSignedIn, isLoaded } = useAuth();
 	const navigate = useNavigate();
 
-	if (isLoaded && !isSignedIn) {
-		navigate('/sign-in');
-	}
+	useEffect(() => {
+		if (isLoaded) {
+			!isSignedIn && navigate('/sign-in/*');
+		}
+	}, []);
 
 	const {
 		register,
