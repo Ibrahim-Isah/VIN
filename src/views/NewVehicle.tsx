@@ -8,16 +8,43 @@ import { BiSolidUserRectangle } from 'react-icons/bi';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { firestore } from '../firebase/firebase';
+import { addDoc, collection } from 'firebase/firestore';
+import { notifyError, notifySuccess } from '../utils/notification';
 
 const schema = z.object({
-	vehicleMake: z.string().nonempty('Vehicle make is required'),
-	vehicleModel: z.string().nonempty('Vehicle model is required'),
-	ownerName: z.string().nonempty("Owner's name is required"),
-	ownerEmail: z
-		.string()
-		.email('Invalid email address')
-		.nonempty("Owner's email is required"),
-	otherInfo: z.string().nonempty('Other information is required'),
+	vehicleCategory: z.string().nonempty(),
+	vehicleSubCategory: z.string().nonempty(),
+	model: z.string().nonempty(),
+	oldPlateNumber: z.string(),
+	engineNumber: z.string().nonempty(),
+	policyNumber: z.string().nonempty(),
+	vehicleMake: z.string().nonempty(),
+	vehicleType: z.string().nonempty(),
+	chassisNo: z.union([z.string(), z.number()]),
+	fuelType: z.string().nonempty(),
+	yearOfManufacture: z.string(),
+	odometer: z.union([z.string(), z.number()]),
+	tankCapacity: z.union([z.string(), z.number()]),
+	engineCapacity: z.union([z.string(), z.number()]),
+	color: z.string().nonempty(),
+	ownerIdentification: z.string().nonempty(),
+	address: z.string().nonempty(),
+	title: z.string().nonempty(),
+	city: z.string().nonempty(),
+	mobileNumber: z.string().nonempty(),
+	firstName: z.string().nonempty(),
+	lastName: z.string().nonempty(),
+	identificationNo: z.union([
+		z.string().nonempty(),
+		z.number().int().positive(),
+	]),
+	email: z.string().nonempty().email(),
+	state: z.string().nonempty(),
+	localGovernment: z.string().nonempty(),
+	driverLicenseNumber: z.string().nonempty(),
+	stateOfPlateNumberAllocation: z.string().nonempty(),
+	licenseBearersName: z.string().nonempty(),
 });
 
 const NewVehicle = () => {
@@ -27,6 +54,7 @@ const NewVehicle = () => {
 	useEffect(() => {
 		if (isLoaded) {
 			!isSignedIn && navigate('/sign-in/*');
+			console.log(userId, isSignedIn);
 		}
 	}, []);
 
@@ -38,40 +66,319 @@ const NewVehicle = () => {
 		resolver: zodResolver(schema),
 	});
 
-	const onSubmit = (data: any) => {
-		console.log(data);
+	const onSubmit = async (data: any) => {
+		data.userId = userId;
 		// You can perform any further actions, such as API calls or state updates, with the form data
+
+		addDoc(collection(firestore, 'Vehicles'), data)
+			.then((docRef) => {
+				console.log('Document written with ID: ', docRef.id);
+				notifySuccess('Vehicle Registration was Successful');
+				navigate('/');
+			})
+			.catch((error) => {
+				console.error('Error adding document: ', error);
+				notifyError('Vehicle Registration was Unsuccessful, Please Try Again');
+			});
 	};
 	return (
 		<Layout>
 			<div className='w-full my-15 mx-auto px-6 py-8'>
+				<h1 className='text-xl md:text-4xl my-10 '>VEHICLE LICENSING SYSTEM</h1>
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<h2 className='text-2xl font-bold  bg-red-500 text-white p-5 flex items-center justify-between'>
 						Vehicle Information
 						<AiFillCar />
 					</h2>
 					{/* Vehicle Information form fields go here */}
-					<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5'>
-						<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center'>
-							<div>
-								<input
-									type='text'
-									placeholder='Vehicle Make'
-									{...register('vehicleMake')}
-									className='p-3 w-96 placeholder:text-[#777777] bg-white rounded-lg outline-none border-2 border-gray-300'
-								/>
-								{errors.vehicleMake && <p>{errors.vehicleMake.message}</p>}
-							</div>
+					<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5 grid grid-cols-1 md:grid-cols-2 gap-3'>
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='vehicleCategory'
+							>
+								Vehicle Category
+							</label>
+							<select
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								id='vehicleCategory'
+								{...register('vehicleCategory')}
+							>
+								<option value=''>-- Select Vehicle Category --</option>
+								<option value='commercial'>Commercial</option>
+								<option value='private'>Private</option>
+								<option value='government'>Government</option>
+							</select>
+							{errors.vehicleCategory && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
 
-							<div>
-								<input
-									type='text'
-									placeholder='Vehicle Model'
-									{...register('vehicleModel')}
-									className='p-3 w-96 placeholder:text-[#777777] bg-white rounded-lg outline-none border-2 border-gray-300'
-								/>
-								{errors.vehicleModel && <p>{errors.vehicleModel.message}</p>}
-							</div>
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='vehicleSubCategory'
+							>
+								Vehicle Sub-Category
+							</label>
+							<select
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								id='vehicleSubCategory'
+								{...register('vehicleSubCategory')}
+							>
+								<option value=''>-- Select Vehicle Sub-Category --</option>
+								<option value='car'>Motor Vehicle</option>
+								<option value='keke'>Keke Napep</option>
+								<option value='bike'>Motor Cycle</option>
+							</select>
+							{errors.vehicleSubCategory && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='model'
+							>
+								Model
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='model'
+								{...register('model')}
+							/>
+							{errors.model && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='oldPlateNumber'
+							>
+								Old Plate Number
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='oldPlateNumber'
+								{...register('oldPlateNumber')}
+							/>
+							{errors.oldPlateNumber && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='engineNumber'
+							>
+								Engine Number
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='engineNumber'
+								{...register('engineNumber')}
+							/>
+							{errors.engineNumber && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='policyNumber'
+							>
+								Policy Number
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='policyNumber'
+								{...register('policyNumber')}
+							/>
+							{errors.policyNumber && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='vehicleMake'
+							>
+								Vehicle Make
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='vehicleMake'
+								{...register('vehicleMake')}
+							/>
+							{errors.vehicleMake && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='vehicleType'
+							>
+								Vehicle Type
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='vehicleType'
+								placeholder='Pick Up, SUV, etc.'
+								{...register('vehicleType')}
+							/>
+							{errors.vehicleType && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='chassisNo'
+							>
+								Chassis No
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='chassisNo'
+								{...register('chassisNo')}
+							/>
+							{errors.chassisNo && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='fuelType'
+							>
+								Fuel Type
+							</label>
+							<select
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								id='fuelType'
+								{...register('fuelType')}
+							>
+								<option value=''>-- Select Fuel Type --</option>
+								<option value='petrol'>Petrol</option>
+								<option value='diesel'>Diesel</option>
+								<option value='bio-fuel'>Bio Fuel</option>
+								<option value='others'>Others</option>
+							</select>
+							{errors.fuelType && (
+								<span className='text-red-500'>This field is required</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='yearOfManufacture'
+							>
+								Year of Manufacture
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='date'
+								id='yearOfManufacture'
+								{...register('yearOfManufacture')}
+							/>
+							{errors.yearOfManufacture && (
+								<span className='text-red-500'>Invalid year</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='odometer'
+							>
+								Odometer
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='odometer'
+								{...register('odometer')}
+							/>
+							{errors.odometer && (
+								<span className='text-red-500'>Invalid odometer reading</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='tankCapacity'
+							>
+								Tank Capacity
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='tankCapacity'
+								{...register('tankCapacity')}
+							/>
+							{errors.tankCapacity && (
+								<span className='text-red-500'>Invalid tank capacity</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='engineCapacity'
+							>
+								Engine Capacity
+							</label>
+							<select
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								id='engineCapacity'
+								{...register('engineCapacity')}
+							>
+								<option value=''>-- Select Engine Capacity --</option>
+								<option value='high'>Above 3.0</option>
+								<option value='low'>Below 1.6</option>
+								<option value='mid'>Between 1.6 to 2.0</option>
+								<option value='good'>Between 2.0 to 3.0</option>
+							</select>
+							{errors.engineCapacity && (
+								<span className='text-red-500'>Invalid engine capacity</span>
+							)}
+						</div>
+
+						<div className='mb-4'>
+							<label
+								className='block text-gray-700 text-sm font-bold mb-2'
+								htmlFor='color'
+							>
+								Color
+							</label>
+							<input
+								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+								type='text'
+								id='color'
+								{...register('color')}
+							/>
+							{errors.color && (
+								<span className='text-red-500'>This field is required</span>
+							)}
 						</div>
 					</div>
 
@@ -81,28 +388,214 @@ const NewVehicle = () => {
 					</h2>
 					{/* Owner's Information form fields go here */}
 
-					<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5'>
-						<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5'>
-							<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center'>
-								<div>
-									<input
-										type='text'
-										placeholder="Owner's Name"
-										className='p-3 w-96 placeholder:text-[#777777] bg-white rounded-lg outline-none border-2 border-gray-300'
-										{...register('ownerName')}
-									/>
-									{errors.ownerName && <p>{errors.ownerName.message}</p>}
-								</div>
+					<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5 '>
+						<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5 grid grid-cols-1 md:grid-cols-2 gap-3'>
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='ownerIdentification'
+								>
+									Owner Identification
+								</label>
+								<select
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									id='ownerIdentification'
+									{...register('ownerIdentification')}
+								>
+									<option value=''>-- Select Owner ID Type --</option>
+									<option value='driver'>Driver's License</option>
+									<option value='nin'>National Identity Number</option>
+									<option value='passport'>International Passport</option>
+									<option value='tax'>Tax Identification Number</option>
+									<option value='company'>Company's RC Number</option>
+								</select>
+								{errors.ownerIdentification && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
 
-								<div>
-									<input
-										type='text'
-										placeholder="Owner's Email"
-										className='p-3 w-96 placeholder:text-[#777777] bg-white rounded-lg outline-none border-2 border-gray-300'
-										{...register('ownerEmail')}
-									/>
-									{errors.ownerEmail && <p>{errors.ownerEmail.message}</p>}
-								</div>
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='address'
+								>
+									Address
+								</label>
+								<textarea
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									id='address'
+									{...register('address')}
+								/>
+								{errors.address && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='title'
+								>
+									Title
+								</label>
+								<select
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									id='title'
+									{...register('title')}
+								>
+									<option value=''>-- Select Title --</option>
+									<option value='Mr'>Mr</option>
+									<option value='Mrs'>Mrs</option>
+									<option value='Miss'>Miss</option>
+									<option value='Dr'>Dr</option>
+								</select>
+								{errors.title && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='city'
+								>
+									City
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='city'
+									{...register('city')}
+								/>
+								{errors.city && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='mobileNumber'
+								>
+									Mobile Number
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='mobileNumber'
+									{...register('mobileNumber')}
+								/>
+								{errors.mobileNumber && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='firstName'
+								>
+									First Name
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='firstName'
+									{...register('firstName')}
+								/>
+								{errors.firstName && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='lastName'
+								>
+									Last Name
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='lastName'
+									{...register('lastName')}
+								/>
+								{errors.lastName && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='identificationNo'
+								>
+									Identification No
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='identificationNo'
+									{...register('identificationNo')}
+								/>
+								{errors.identificationNo && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='email'
+								>
+									Email
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='email'
+									id='email'
+									{...register('email')}
+								/>
+								{errors.email && (
+									<span className='text-red-500'>Invalid email address</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='state'
+								>
+									State
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='state'
+									{...register('state')}
+								/>
+								{errors.state && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='localGovernment'
+								>
+									Local Government
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='localGovernment'
+									{...register('localGovernment')}
+								/>
+								{errors.localGovernment && (
+									<span className='text-red-500'>This field is required</span>
+								)}
 							</div>
 						</div>
 					</div>
@@ -114,17 +607,59 @@ const NewVehicle = () => {
 					{/* Other Information form fields go here */}
 
 					<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5'>
-						<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5'>
-							<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center'>
-								<div>
-									<input
-										type='text'
-										placeholder='Other Information'
-										className='p-3 w-96 placeholder:text-[#777777] bg-white rounded-lg outline-none border-2 border-gray-300'
-										{...register('otherInfo')}
-									/>
-									{errors.otherInfo && <p>{errors.otherInfo.message}</p>}
-								</div>
+						<div className='shadow-sm bg-[#f5f5f5] mb-10 p-5 grid grid-cols-1 md:grid-cols-2 gap-3'>
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='driverLicenseNumber'
+								>
+									Driver License Number
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='driverLicenseNumber'
+									{...register('driverLicenseNumber')}
+								/>
+								{errors.driverLicenseNumber && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='stateOfPlateNumberAllocation'
+								>
+									State of Plate Number Allocation
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='stateOfPlateNumberAllocation'
+									{...register('stateOfPlateNumberAllocation')}
+								/>
+								{errors.stateOfPlateNumberAllocation && (
+									<span className='text-red-500'>This field is required</span>
+								)}
+							</div>
+
+							<div className='mb-4'>
+								<label
+									className='block text-gray-700 text-sm font-bold mb-2'
+									htmlFor='licenseBearersName'
+								>
+									License Bearer's Name
+								</label>
+								<input
+									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+									type='text'
+									id='licenseBearersName'
+									{...register('licenseBearersName')}
+								/>
+								{errors.licenseBearersName && (
+									<span className='text-red-500'>This field is required</span>
+								)}
 							</div>
 						</div>
 					</div>

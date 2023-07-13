@@ -1,5 +1,7 @@
 import { ClerkProvider, SignIn, SignUp } from '@clerk/clerk-react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from './views/Home';
 import NewVehicle from './views/NewVehicle';
 import Vehicles from './views/Vehicles';
@@ -24,6 +26,7 @@ function ClerkProviderWithRoutes() {
 				<Route path='/new' element={<NewVehicle />} />
 				<Route path='/vehicles' element={<Vehicles />} />
 			</Routes>
+			<ToastContainer />
 		</ClerkProvider>
 	);
 }
