@@ -42,9 +42,9 @@ const schema = z.object({
 	email: z.string().nonempty().email(),
 	state: z.string().nonempty(),
 	localGovernment: z.string().nonempty(),
-	driverLicenseNumber: z.string().nonempty(),
-	stateOfPlateNumberAllocation: z.string().nonempty(),
-	licenseBearersName: z.string().nonempty(),
+	driverLicenseNumber: z.string().min(5),
+	stateOfPlateNumberAllocation: z.string(),
+	licenseBearersName: z.string(),
 });
 
 const NewVehicle = () => {
@@ -86,7 +86,7 @@ const NewVehicle = () => {
 			<div className='w-full my-15 mx-auto px-6 py-8'>
 				<h1 className='text-xl md:text-4xl my-10 '>VEHICLE LICENSING SYSTEM</h1>
 				<form onSubmit={handleSubmit(onSubmit)}>
-					<h2 className='text-2xl font-bold  bg-red-500 text-white p-5 flex items-center justify-between'>
+					<h2 className='text-2xl font-bold  bg-blue-500 text-white p-5 flex items-center justify-between'>
 						Vehicle Information
 						<AiFillCar />
 					</h2>
@@ -146,6 +146,7 @@ const NewVehicle = () => {
 							<input
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
+								placeholder='Toyota Camry'
 								id='model'
 								{...register('model')}
 							/>
@@ -164,6 +165,7 @@ const NewVehicle = () => {
 							<input
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
+								placeholder='AB123CD'
 								id='oldPlateNumber'
 								{...register('oldPlateNumber')}
 							/>
@@ -183,6 +185,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='engineNumber'
+								placeholder='123456789'
 								{...register('engineNumber')}
 							/>
 							{errors.engineNumber && (
@@ -201,6 +204,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='policyNumber'
+								placeholder='P123456'
 								{...register('policyNumber')}
 							/>
 							{errors.policyNumber && (
@@ -219,6 +223,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='vehicleMake'
+								placeholder='Toyota'
 								{...register('vehicleMake')}
 							/>
 							{errors.vehicleMake && (
@@ -256,6 +261,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='chassisNo'
+								placeholder='XYZ789'
 								{...register('chassisNo')}
 							/>
 							{errors.chassisNo && (
@@ -276,10 +282,10 @@ const NewVehicle = () => {
 								{...register('fuelType')}
 							>
 								<option value=''>-- Select Fuel Type --</option>
-								<option value='petrol'>Petrol</option>
-								<option value='diesel'>Diesel</option>
-								<option value='bio-fuel'>Bio Fuel</option>
-								<option value='others'>Others</option>
+								<option value='Petrol'>Petrol</option>
+								<option value='Diesel'>Diesel</option>
+								<option value='Bio-fuel'>Bio Fuel</option>
+								<option value='Others'>Others</option>
 							</select>
 							{errors.fuelType && (
 								<span className='text-red-500'>This field is required</span>
@@ -315,6 +321,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='odometer'
+								placeholder='50,000'
 								{...register('odometer')}
 							/>
 							{errors.odometer && (
@@ -333,6 +340,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='tankCapacity'
+								placeholder='60'
 								{...register('tankCapacity')}
 							/>
 							{errors.tankCapacity && (
@@ -374,6 +382,7 @@ const NewVehicle = () => {
 								className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 								type='text'
 								id='color'
+								placeholder='Black'
 								{...register('color')}
 							/>
 							{errors.color && (
@@ -382,7 +391,7 @@ const NewVehicle = () => {
 						</div>
 					</div>
 
-					<h2 className='text-2xl font-bold mt-8  bg-red-500 text-white p-5 flex items-center justify-between'>
+					<h2 className='text-2xl font-bold mt-8  bg-blue-500 text-white p-5 flex items-center justify-between'>
 						Owner's Information
 						<BiSolidUserRectangle />
 					</h2>
@@ -403,11 +412,11 @@ const NewVehicle = () => {
 									{...register('ownerIdentification')}
 								>
 									<option value=''>-- Select Owner ID Type --</option>
-									<option value='driver'>Driver's License</option>
-									<option value='nin'>National Identity Number</option>
-									<option value='passport'>International Passport</option>
-									<option value='tax'>Tax Identification Number</option>
-									<option value='company'>Company's RC Number</option>
+									<option value='Driver License'>Driver's License</option>
+									<option value='NIN'>National Identity Number</option>
+									<option value="Int'l Passport">International Passport</option>
+									<option value='TIN'>Tax Identification Number</option>
+									<option value='Company RC'>Company's RC Number</option>
 								</select>
 								{errors.ownerIdentification && (
 									<span className='text-red-500'>This field is required</span>
@@ -424,6 +433,7 @@ const NewVehicle = () => {
 								<textarea
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									id='address'
+									placeholder='123 Main Street, City'
 									{...register('address')}
 								/>
 								{errors.address && (
@@ -465,6 +475,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='city'
+									placeholder='Enter your city'
 									{...register('city')}
 								/>
 								{errors.city && (
@@ -501,6 +512,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='firstName'
+									placeholder='John'
 									{...register('firstName')}
 								/>
 								{errors.firstName && (
@@ -519,6 +531,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='lastName'
+									placeholder='Doe'
 									{...register('lastName')}
 								/>
 								{errors.lastName && (
@@ -537,6 +550,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='identificationNo'
+									placeholder='123456789'
 									{...register('identificationNo')}
 								/>
 								{errors.identificationNo && (
@@ -555,6 +569,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='email'
 									id='email'
+									placeholder='johndoe@example.com'
 									{...register('email')}
 								/>
 								{errors.email && (
@@ -573,6 +588,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='state'
+									placeholder='Enter your state'
 									{...register('state')}
 								/>
 								{errors.state && (
@@ -591,6 +607,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='localGovernment'
+									placeholder='Enter your local government'
 									{...register('localGovernment')}
 								/>
 								{errors.localGovernment && (
@@ -600,7 +617,7 @@ const NewVehicle = () => {
 						</div>
 					</div>
 
-					<h2 className='text-2xl font-bold mt-8  bg-red-500 text-white p-5 flex items-center justify-between'>
+					<h2 className='text-2xl font-bold mt-8  bg-blue-500 text-white p-5 flex items-center justify-between'>
 						Other Information
 						<AiFillBook />
 					</h2>
@@ -619,6 +636,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='driverLicenseNumber'
+									placeholder='DL1234567'
 									{...register('driverLicenseNumber')}
 								/>
 								{errors.driverLicenseNumber && (
@@ -637,6 +655,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='stateOfPlateNumberAllocation'
+									placeholder='Abuja, Lagos etc'
 									{...register('stateOfPlateNumberAllocation')}
 								/>
 								{errors.stateOfPlateNumberAllocation && (
@@ -655,6 +674,7 @@ const NewVehicle = () => {
 									className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 									type='text'
 									id='licenseBearersName'
+									placeholder='John Doe'
 									{...register('licenseBearersName')}
 								/>
 								{errors.licenseBearersName && (
