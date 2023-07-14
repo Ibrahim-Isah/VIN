@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from './views/Home';
 import NewVehicle from './views/NewVehicle';
 import Vehicles from './views/Vehicles';
+import Details from './views/Details';
 
 const clerkPubKey = 'pk_test_c3VtbWFyeS1kYW5lLTUwLmNsZXJrLmFjY291bnRzLmRldiQ';
 
@@ -25,6 +26,7 @@ function ClerkProviderWithRoutes() {
 				/>
 				<Route path='/new' element={<NewVehicle />} />
 				<Route path='/vehicles' element={<Vehicles />} />
+				<Route path='/details/:id' element={<Details />} />
 			</Routes>
 			<ToastContainer />
 		</ClerkProvider>

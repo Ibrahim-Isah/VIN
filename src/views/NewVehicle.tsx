@@ -74,7 +74,7 @@ const NewVehicle = () => {
 			.then((docRef) => {
 				console.log('Document written with ID: ', docRef.id);
 				notifySuccess('Vehicle Registration was Successful');
-				navigate('/');
+				navigate('/vehicles');
 			})
 			.catch((error) => {
 				console.error('Error adding document: ', error);
