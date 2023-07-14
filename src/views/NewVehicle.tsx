@@ -58,6 +58,22 @@ const NewVehicle = () => {
 		}
 	}, []);
 
+	function generateRandomWord() {
+		const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		const numbers = '0123456789';
+
+		let word = '';
+		word += alphabet[Math.floor(Math.random() * alphabet.length)]; // First letter (A-Z)
+		word += alphabet[Math.floor(Math.random() * alphabet.length)]; // Second letter (A-Z)
+		word += numbers[Math.floor(Math.random() * numbers.length)]; // First number (0-9)
+		word += numbers[Math.floor(Math.random() * numbers.length)]; // Second number (0-9)
+		word += alphabet[Math.floor(Math.random() * alphabet.length)]; // Third letter (A-Z)
+		word += alphabet[Math.floor(Math.random() * alphabet.length)]; // Fourth letter (A-Z)
+		word += alphabet[Math.floor(Math.random() * alphabet.length)]; // Fifth letter (A-Z)
+
+		return word;
+	}
+
 	const {
 		register,
 		handleSubmit,
@@ -68,6 +84,7 @@ const NewVehicle = () => {
 
 	const onSubmit = async (data: any) => {
 		data.userId = userId;
+		data.plateNumber = generateRandomWord();
 		// You can perform any further actions, such as API calls or state updates, with the form data
 
 		addDoc(collection(firestore, 'Vehicles'), data)

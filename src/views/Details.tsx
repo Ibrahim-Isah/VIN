@@ -55,6 +55,12 @@ const Details = () => {
 					</Link>
 				</div>
 			</header>
+			<div className='flex items-center my-3 py-2 px-6 border border-gray-300 rounded-lg'>
+				<span className='font-semibold text-xl'>Plate Number:</span>{' '}
+				<span className='font-bold text-blue-500 text-xl'>
+					{vehicle?.data?.plateNumber}
+				</span>
+			</div>
 			{vehicle ? (
 				vehicle.data && <VehicleDetail vehicle={vehicle.data} />
 			) : (
